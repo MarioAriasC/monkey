@@ -88,9 +88,50 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.StringLiteral:
 		return &object.String{Value: node.Value}
 
+	case *ast.ArrayLiteral:
+		elements := evalExpressions(node.Elements, env)
+		if len(elements) == 1 && isError(elements[0]) {
+			return elements[0]
+		}
+		return &object.Array{Elements: elements}
+
+	case *ast.IndexExpression:
+		left := Eval(node.Left, env)
+
+		if isError(left) {
+			return left
+		}
+
+		index := Eval(node.Index, env)
+
+		if isError(index) {
+			return index
+		}
+		return evalIndexExpression(left, index)
 	}
 
 	return nil
+}
+
+func evalIndexExpression(left, index object.Object) object.Object {
+	switch {
+	case left.Type() == object.ArrayObj && index.Type() == object.IntegerObj:
+		return evalArrayIndexExpression(left, index)
+	default:
+		return newError("index operator not supported: %s", left.Type())
+	}
+}
+
+func evalArrayIndexExpression(array, index object.Object) object.Object {
+	arrayObject := array.(*object.Array)
+	i := index.(*object.Integer).Value
+	max := int64(len(arrayObject.Elements) - 1)
+
+	if i < 0 || i > max {
+		return NULL
+	}
+
+	return arrayObject.Elements[i]
 }
 
 func applyFunction(fn object.Object, args []object.Object) object.Object {
@@ -105,10 +146,6 @@ func applyFunction(fn object.Object, args []object.Object) object.Object {
 	default:
 		return newError("not a function: %s", fn.Type())
 	}
-
-
-
-
 }
 
 func unwrapReturnValue(obj object.Object) object.Object {
