@@ -1,6 +1,9 @@
 package evaluator
 
-import "monkey/object"
+import (
+	"fmt"
+	"monkey/object"
+)
 
 func argSizeCheck(expectedSize int, args []object.Object, body func([]object.Object) object.Object) object.Object {
 	argsLength := len(args)
@@ -87,6 +90,15 @@ var builtins = map[string]*object.Builtin{
 					return &object.Array{Elements: newElements}
 				})
 			})
+		},
+	},
+	"puts": {
+		Fn: func(args ...object.Object) object.Object {
+			for _, arg := range args {
+				fmt.Println(arg.Inspect())
+			}
+
+			return NULL
 		},
 	},
 }
