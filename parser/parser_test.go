@@ -754,9 +754,10 @@ func TestParsingHashLiteralStringKeys(t *testing.T) {
 		literal, ok := key.(*ast.StringLiteral)
 		if !ok {
 			t.Errorf("key is not ast.StringLiteral. got=%T", key)
-			expectedValue := expected[literal.String()]
-			testIntegerLiteral(t, value, expectedValue)
+			continue
 		}
+		expectedValue := expected[literal.String()]
+		testIntegerLiteral(t, value, expectedValue)
 	}
 }
 
