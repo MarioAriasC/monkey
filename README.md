@@ -2,7 +2,7 @@
 
 A go implementation of the [Monkey Language](https://monkeylang.org/)
 
-Basically following the book (Chapter 4 at this point).
+Basically following the book, including the lost chapter.
 
 My code is shorter as I used high order functions in some places to reduce code duplication, i.e.:
 
