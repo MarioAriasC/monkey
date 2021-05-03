@@ -820,6 +820,37 @@ func TestParsingHashLiteralsWithExpressions(t *testing.T) {
 	}
 }
 
+func TestMacroLiteralParsing(t *testing.T) {
+	input := `macro(x, y){x + y;}`
+	program := createProgram(t, input)
+	countStatements(1,t,program)
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("statement is not ast.ExpressionStatement. got=%T", stmt.Expression)
+	}
+	macro, ok := stmt.Expression.(*ast.MacroLiteral)
+	if !ok {
+		t.Fatalf("stmt.Expression os not ast.MacroLiteral. got=%T", stmt.Expression)
+	}
+	if len(macro.Parameters) != 2 {
+		t.Fatalf("macro literal parameters wrong.  want 2, got=%d\n", len(macro.Parameters))
+	}
+
+	testLiteralExpression(t,  macro.Parameters[0], "x")
+	testLiteralExpression(t,  macro.Parameters[1], "y")
+
+	if len(macro.Body.Statements) != 1 {
+		t.Fatalf("macro.Body.Statement has not 1 statement. got=%d\n", len(macro.Body.Statements))
+	}
+
+	bodyStmt, ok := macro.Body.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("macro body stmt is ot ast.ExpressionStatement. got=%T", macro.Body.Statements[0])
+	}
+
+	testInfixExpression(t, bodyStmt.Expression, "x", "+", "y")
+}
+
 func countStatements(size int, t *testing.T, program *ast.Program) {
 	statementLen := len(program.Statements)
 	if statementLen != size {
