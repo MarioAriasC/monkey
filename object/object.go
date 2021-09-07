@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"hash/fnv"
 	"monkey/ast"
+	"monkey/code"
 	"strings"
 )
 
@@ -13,18 +14,19 @@ type ObjectType string
 type BuiltinFunction func(args ...Object) Object
 
 const (
-	IntegerObj     = "INTEGER"
-	BooleanObj     = "BOOLEAN"
-	NullObj        = "NULL"
-	ReturnValueObj = "RETURN_VALUE"
-	ErrorObj       = "ERROR"
-	FunctionObj    = "FUNCTION"
-	StringObj      = "STRING"
-	BuiltinObj     = "BUILTIN"
-	ArrayObj       = "ARRAY"
-	HashObj        = "HASH"
-	QuoteObj       = "QUOTE"
-	MacroObj       = "MACRO"
+	IntegerObj          = "INTEGER"
+	BooleanObj          = "BOOLEAN"
+	NullObj             = "NULL"
+	ReturnValueObj      = "RETURN_VALUE"
+	ErrorObj            = "ERROR"
+	FunctionObj         = "FUNCTION"
+	StringObj           = "STRING"
+	BuiltinObj          = "BUILTIN"
+	ArrayObj            = "ARRAY"
+	HashObj             = "HASH"
+	QuoteObj            = "QUOTE"
+	MacroObj            = "MACRO"
+	CompiledFunctionObj = "COMPILED_FUNCTION_OBJ"
 )
 
 type Object interface {
@@ -262,4 +264,18 @@ func (m *Macro) Inspect() string {
 	out.WriteString("\n}")
 
 	return out.String()
+}
+
+type CompiledFunction struct {
+	Instructions  code.Instructions
+	NumLocals     int
+	NumParameters int
+}
+
+func (cf *CompiledFunction) Type() ObjectType {
+	return CompiledFunctionObj
+}
+
+func (cf *CompiledFunction) Inspect() string {
+	return fmt.Sprintf("CompiledFunciton[%p]", cf)
 }
