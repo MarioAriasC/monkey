@@ -737,16 +737,16 @@ func TestParsingHashLiteralStringKeys(t *testing.T) {
 	stmt := program.Statements[0].(*ast.ExpressionStatement)
 	hash, ok := stmt.Expression.(*ast.HashLiteral)
 	if !ok {
-		t.Fatalf("exp is not ast.HashLiteral. got=%T",  stmt.Expression)
+		t.Fatalf("exp is not ast.HashLiteral. got=%T", stmt.Expression)
 	}
 
-	if len(hash.Pairs) != 3  {
+	if len(hash.Pairs) != 3 {
 		t.Errorf("hash.Pairs has wrong length.  got=%d", len(hash.Pairs))
 	}
 
 	expected := map[string]int64{
-		"one": 1,
-		"two": 2,
+		"one":   1,
+		"two":   2,
 		"three": 3,
 	}
 
@@ -787,13 +787,13 @@ func TestParsingHashLiteralsWithExpressions(t *testing.T) {
 		t.Fatalf("exp is n ot ast.HashLiteral. got=%d", stmt.Expression)
 	}
 
-	if len(hash.Pairs) != 3  {
+	if len(hash.Pairs) != 3 {
 		t.Errorf("hash.Pairs has wrong length.  got=%d", len(hash.Pairs))
 	}
 
 	tests := map[string]func(e ast.Expression){
 		"one": func(e ast.Expression) {
-			testInfixExpression(t, e, 0,  "+", 1)
+			testInfixExpression(t, e, 0, "+", 1)
 		},
 		"two": func(e ast.Expression) {
 			testInfixExpression(t, e, 10, "-", 8)
@@ -820,10 +820,29 @@ func TestParsingHashLiteralsWithExpressions(t *testing.T) {
 	}
 }
 
+func TestFunctionLiteralWithName(t *testing.T) {
+	input := `let myFunction = fn() {};`
+	program := createProgram(t, input)
+
+	stmt, ok := program.Statements[0].(*ast.LetStatement)
+	if !ok {
+		t.Fatalf("program.Statements[0] is not ast.LetStatement. got=%T", program.Statements[0])
+	}
+
+	function, ok := stmt.Value.(*ast.FunctionLiteral)
+	if !ok {
+		t.Fatalf("stmt.Value is not ast.FunctionLiteral. got=%T", stmt.Value)
+	}
+
+	if function.Name != "myFunction" {
+		t.Fatalf("function literal name wrong. want 'myFunction', got=%q\n", function.Name)
+	}
+}
+
 func TestMacroLiteralParsing(t *testing.T) {
 	input := `macro(x, y){x + y;}`
 	program := createProgram(t, input)
-	countStatements(1,t,program)
+	countStatements(1, t, program)
 	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
 	if !ok {
 		t.Fatalf("statement is not ast.ExpressionStatement. got=%T", stmt.Expression)
@@ -836,8 +855,8 @@ func TestMacroLiteralParsing(t *testing.T) {
 		t.Fatalf("macro literal parameters wrong.  want 2, got=%d\n", len(macro.Parameters))
 	}
 
-	testLiteralExpression(t,  macro.Parameters[0], "x")
-	testLiteralExpression(t,  macro.Parameters[1], "y")
+	testLiteralExpression(t, macro.Parameters[0], "x")
+	testLiteralExpression(t, macro.Parameters[1], "y")
 
 	if len(macro.Body.Statements) != 1 {
 		t.Fatalf("macro.Body.Statement has not 1 statement. got=%d\n", len(macro.Body.Statements))

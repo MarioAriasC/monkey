@@ -127,6 +127,10 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 
 	stmt.Value = p.parseExpression(LOWEST)
 
+	if fl, ok := stmt.Value.(*ast.FunctionLiteral); ok {
+		fl.Name = stmt.Name.Value
+	}
+
 	if p.peekTokenIs(token.SEMICOLON) {
 		p.nextToken()
 	}
@@ -500,7 +504,7 @@ func (p *Parser) parseHarshLiteral() ast.Expression {
 
 		hash.Pairs[key] = value
 
-		if !p.peekTokenIs(token.RBRACE) && !p.expectPeek(token.COMMA){
+		if !p.peekTokenIs(token.RBRACE) && !p.expectPeek(token.COMMA) {
 			return nil
 		}
 	}
@@ -515,7 +519,7 @@ func (p *Parser) parseHarshLiteral() ast.Expression {
 func (p *Parser) parseMacroLiteral() ast.Expression {
 	lit := &ast.MacroLiteral{Token: p.curToken}
 
-	if !p.expectPeek(token.LPAREN){
+	if !p.expectPeek(token.LPAREN) {
 		return nil
 	}
 
