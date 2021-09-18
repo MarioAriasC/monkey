@@ -15,8 +15,6 @@ const PROMPT = ">> "
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
-	//env := object.NewEnvironment()
-	//macroEnv := object.NewEnvironment()
 	var constants []object.Object
 	globals := make([]object.Object, vm.GlobalsSize)
 	symbolTable := compiler.NewSymbolTable()
@@ -60,13 +58,6 @@ func Start(in io.Reader, out io.Writer) {
 		io.WriteString(out, stackTop.Inspect())
 		io.WriteString(out, "\n")
 
-		/*evaluator.DefineMacros(program, macroEnv)
-		expanded := evaluator.ExpandMacros(program, macroEnv)
-		evaluated := evaluator.Eval(expanded, env)
-		if evaluated != nil {
-			io.WriteString(out, evaluated.Inspect())
-			io.WriteString(out, "\n")
-		}*/
 	}
 
 }

@@ -2,7 +2,7 @@
 
 A go implementation of the [Monkey Language](https://monkeylang.org/)
 
-Basically following the book, including the lost chapter.
+Following both books, it implements the interpreter and the compiler
 
 My code is shorter as I used high order functions in some places to reduce code duplication, i.e.:
 
