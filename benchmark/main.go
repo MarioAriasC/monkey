@@ -13,11 +13,12 @@ import (
 )
 
 var engine = flag.String("engine", "vm", "use 'vm' or 'eval'")
+var algo = flag.String("algo", "fast", "use 'slow' or 'fast'")
 
-var input = `
+var slowInput = `
 let fibonacci = fn(x) {
 	if (x == 0) {
-		return 0;	
+		return 0;
 	} else {
 		if (x == 1) {
 			return 1;
@@ -29,11 +30,29 @@ let fibonacci = fn(x) {
 fibonacci(35);
 `
 
+var fastInput = `
+let fibonacci = fn(x) {    	
+    if (x < 2) {
+    	return x;
+    } else {
+    	fibonacci(x - 1) + fibonacci(x - 2);
+    }
+};
+fibonacci(35);        
+`
+
 func main() {
 	flag.Parse()
 
 	var duration time.Duration
 	var result object.Object
+
+	var input string
+	if *algo == "slow" {
+		input = slowInput
+	} else {
+		input = fastInput
+	}
 
 	l := lexer.New(input)
 	p := parser.New(l)
@@ -63,5 +82,5 @@ func main() {
 		duration = time.Since(start)
 	}
 
-	fmt.Printf("engine=%s, result=%s, duration=%s\n", *engine, result.Inspect(), duration)
+	fmt.Printf("engine=%s, algo=%s, result=%s, duration=%s\n", *engine, *algo, result.Inspect(), duration)
 }

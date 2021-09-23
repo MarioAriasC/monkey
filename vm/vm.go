@@ -489,9 +489,15 @@ func (vm *VM) callBuiltin(builtin *object.Builtin, numArgs int) error {
 	result := builtin.Fn(args...)
 	vm.sp = vm.sp - numArgs - 1
 	if result != nil {
-		vm.push(result)
+		err := vm.push(result)
+		if err != nil {
+			return err
+		}
 	} else {
-		vm.push(Null)
+		err := vm.push(Null)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

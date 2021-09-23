@@ -131,3 +131,44 @@ var builtins = map[string]*object.Builtin{
 		},
 	},
 ```
+
+# Running
+
+Build the executable with:
+
+```shell
+$ go build -o monkey .
+```
+
+And run it with:
+
+```shell
+$ ./monkey
+```
+
+# Benchmarks
+
+Build the benchmark with:
+
+```shell
+$ go build -o fibonacci ./benchmark
+```
+
+And run it with:
+
+```shell
+$ ./fibonacci
+```
+
+You can pass two additional parameters:
+
+ - `engine` with two possible values: `vm` and `eval`.
+ - `algo` with two possible values: `slow` and `fast`.
+
+# Tests
+
+Run the tests with:
+
+```shell
+$ go test ./...
+```

@@ -50,7 +50,6 @@ type Boolean struct {
 }
 
 func (b *Boolean) Type() ObjectType {
-
 	return BooleanObj
 }
 
