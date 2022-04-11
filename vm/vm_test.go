@@ -10,13 +10,13 @@ import (
 	"testing"
 )
 
-type vmTestCase struct {
+type vmTestCase[T any] struct {
 	input    string
-	expected interface{}
+	expected T
 }
 
 func TestIntegerArithmetic(t *testing.T) {
-	tests := []vmTestCase{
+	tests := []vmTestCase[int]{
 		{"1", 1},
 		{"2", 2},
 		{"1 + 2", 3},
@@ -38,7 +38,7 @@ func TestIntegerArithmetic(t *testing.T) {
 }
 
 func TestBooleanExpressions(t *testing.T) {
-	tests := []vmTestCase{
+	tests := []vmTestCase[bool]{
 		{"true", true},
 		{"false", false},
 		{"1 < 2", true},
@@ -70,7 +70,7 @@ func TestBooleanExpressions(t *testing.T) {
 }
 
 func TestConditionals(t *testing.T) {
-	tests := []vmTestCase{
+	tests := []vmTestCase[any]{
 		{"if (true) {10}", 10},
 		{"if (true) {10} else {20}", 10},
 		{"if (false) {10} else {20}", 20},
@@ -87,7 +87,7 @@ func TestConditionals(t *testing.T) {
 }
 
 func TestGlobalLetStatements(t *testing.T) {
-	tests := []vmTestCase{
+	tests := []vmTestCase[int]{
 		{"let one = 1; one", 1},
 		{"let one = 1;let two = 2; one + two", 3},
 		{"let one = 1;let two = one + one; one + two", 3},
@@ -97,7 +97,7 @@ func TestGlobalLetStatements(t *testing.T) {
 }
 
 func TestStringExpressions(t *testing.T) {
-	tests := []vmTestCase{
+	tests := []vmTestCase[string]{
 		{`"monkey"`, "monkey"},
 		{`"mon" + "key"`, "monkey"},
 		{`"mon" + "key" + "banana"`, "monkeybanana"},
@@ -107,7 +107,7 @@ func TestStringExpressions(t *testing.T) {
 }
 
 func TestArrayLiterals(t *testing.T) {
-	tests := []vmTestCase{
+	tests := []vmTestCase[[]int]{
 		{"[]", []int{}},
 		{"[1, 2, 3]", []int{1, 2, 3}},
 		{"[1 + 2, 3 * 4, 5 + 6]", []int{3, 12, 11}},
@@ -117,7 +117,7 @@ func TestArrayLiterals(t *testing.T) {
 }
 
 func TestHashLiteral(t *testing.T) {
-	tests := []vmTestCase{
+	tests := []vmTestCase[map[object.HashKey]int64]{
 		{
 			"{}", map[object.HashKey]int64{},
 		},
@@ -140,7 +140,7 @@ func TestHashLiteral(t *testing.T) {
 }
 
 func TestIndexExpression(t *testing.T) {
-	tests := []vmTestCase{
+	tests := []vmTestCase[any]{
 		{"[1, 2, 3][1]", 2},
 		{"[1, 2, 3][0 + 2]", 3},
 		{"[[1, 1, 1]][0][0]", 1},
@@ -156,7 +156,7 @@ func TestIndexExpression(t *testing.T) {
 }
 
 func TestCallingFunctionsWithoutArguments(t *testing.T) {
-	tests := []vmTestCase{
+	tests := []vmTestCase[int]{
 		{
 			input: `
 let fivePlusTen = fn() {5 + 10; };
@@ -187,7 +187,7 @@ c();
 }
 
 func TestFunctionsWithReturnStatement(t *testing.T) {
-	tests := []vmTestCase{
+	tests := []vmTestCase[int]{
 		{
 			input: `
 let earlyExit = fn() { return 99; 100; };
@@ -207,7 +207,7 @@ earlyExit();
 }
 
 func TestFunctionsWithoutReturnValue(t *testing.T) {
-	tests := []vmTestCase{
+	tests := []vmTestCase[*object.Null]{
 		{
 			input: `
 let noReturn = fn() {};
@@ -231,7 +231,7 @@ noReturnTwo();
 }
 
 func TestFirstClassFunctions(t *testing.T) {
-	tests := []vmTestCase{
+	tests := []vmTestCase[int]{
 		{
 			input: `
 let returnsOne = fn(){ 1;};
@@ -257,7 +257,7 @@ returnsOneReturner()();
 }
 
 func TestCallingFunctionsWithBindings(t *testing.T) {
-	tests := []vmTestCase{
+	tests := []vmTestCase[int]{
 		{
 			input: `
 let one = fn() { let one = 1; one;};
@@ -327,7 +327,7 @@ minusOne() + minusTwo();
 }
 
 func TestCallingFunctionsWithArgumentsAndBindings(t *testing.T) {
-	tests := []vmTestCase{
+	tests := []vmTestCase[int]{
 		{
 			input: `
 let identity = fn(a) { a; };
@@ -394,7 +394,7 @@ outer() + globalNum;
 }
 
 func TestCallingFunctionsWithWrongArguments(t *testing.T) {
-	tests := []vmTestCase{
+	tests := []vmTestCase[string]{
 		{
 			input:    `fn() {1;}(1);`,
 			expected: "wrong number of arguments: want=0, got=1",
@@ -424,13 +424,13 @@ func TestCallingFunctionsWithWrongArguments(t *testing.T) {
 		}
 
 		if err.Error() != tt.expected {
-			t.Fatalf("wrong VM error: want=%g, got=%q", tt.expected, err)
+			t.Fatalf("wrong VM error: want=%s, got=%s", tt.expected, err)
 		}
 	}
 }
 
 func TestBuiltinFunctions(t *testing.T) {
-	tests := []vmTestCase{
+	tests := []vmTestCase[any]{
 		{`len("")`, 0},
 		{`len("four")`, 4},
 		{`len("hello world")`, 11},
@@ -465,7 +465,7 @@ func TestBuiltinFunctions(t *testing.T) {
 }
 
 func TestClosures(t *testing.T) {
-	tests := []vmTestCase{
+	tests := []vmTestCase[int]{
 		{
 			input: `
 let newClosure = fn(a) {
@@ -544,7 +544,7 @@ closure();
 }
 
 func TestRecursiveFunctions(t *testing.T) {
-	tests := []vmTestCase{
+	tests := []vmTestCase[int]{
 		{
 			input: `
 let countDown = fn(x) {
@@ -595,7 +595,7 @@ wrapper();
 }
 
 func TestRecursiveFibonacci(t *testing.T) {
-	tests := []vmTestCase{
+	tests := []vmTestCase[int]{
 		{
 			input: `
 let fibonacci = fn(x) {
@@ -617,7 +617,7 @@ fibonacci(15);
 	runVmTests(t, tests)
 }
 
-func runVmTests(t *testing.T, tests []vmTestCase) {
+func runVmTests[T any](t *testing.T, tests []vmTestCase[T]) {
 	t.Helper()
 
 	for _, tt := range tests {
@@ -642,10 +642,10 @@ func runVmTests(t *testing.T, tests []vmTestCase) {
 	}
 }
 
-func testExpectObject(t *testing.T, expected interface{}, actual object.Object) {
+func testExpectObject[T any](t *testing.T, expected T, actual object.Object) {
 	t.Helper()
 
-	switch expected := expected.(type) {
+	switch expected := any(expected).(type) {
 	case bool:
 		err := testBooleanObject(expected, actual)
 		if err != nil {
