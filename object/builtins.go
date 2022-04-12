@@ -18,7 +18,7 @@ func arrayCheck(builtinName string, args []Object, body func(*Array, int) Object
 	return body(arr, len(arr.Elements))
 }
 
-func NewError(format string, args ...interface{}) *Error {
+func NewError(format string, args ...any) *Error {
 	return &Error{Message: fmt.Sprintf(format, args...)}
 }
 
