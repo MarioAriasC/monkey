@@ -5,20 +5,20 @@ import "fmt"
 func argSizeCheck(expectedSize int, args []Object, body func([]Object) Object) Object {
 	argsLength := len(args)
 	if argsLength != expectedSize {
-		return newError("wrong number of arguments. got=%d, want=%d", argsLength, expectedSize)
+		return NewError("wrong number of arguments. got=%d, want=%d", argsLength, expectedSize)
 	}
 	return body(args)
 }
 
 func arrayCheck(builtinName string, args []Object, body func(*Array, int) Object) Object {
 	if args[0].Type() != ArrayObj {
-		return newError("argument to '%s' must be ARRAY, got %s", builtinName, args[0].Type())
+		return NewError("argument to '%s' must be ARRAY, got %s", builtinName, args[0].Type())
 	}
 	arr := args[0].(*Array)
 	return body(arr, len(arr.Elements))
 }
 
-func newError(format string, args ...interface{}) *Error {
+func NewError(format string, args ...interface{}) *Error {
 	return &Error{Message: fmt.Sprintf(format, args...)}
 }
 
@@ -36,7 +36,7 @@ var Builtins = []struct {
 				case *Array:
 					return &Integer{Value: int64(len(arg.Elements))}
 				default:
-					return newError("argument to 'len' not supported, got %s", arg.Type())
+					return NewError("argument to 'len' not supported, got %s", arg.Type())
 				}
 			})
 		}},
