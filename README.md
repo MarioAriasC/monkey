@@ -165,6 +165,10 @@ You can pass two additional parameters:
  - `engine` with two possible values: `vm` and `eval`.
  - `algo` with two possible values: `slow` and `fast`.
 
+```shell
+$ ./fibonacci --engine=eval
+```
+
 # Tests
 
 Run the tests with:

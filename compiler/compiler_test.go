@@ -992,14 +992,14 @@ func runCompilerTests[T any](t *testing.T, tests []compilerTestCase[T]) {
 			t.Fatalf("testInstructions failed: %s", err)
 		}
 
-		err = testConstants(t, tt.expectedConstants, bytecode.Constants)
+		err = testConstants(tt.expectedConstants, bytecode.Constants)
 		if err != nil {
 			t.Fatalf("testConstants failed: %s", err)
 		}
 	}
 }
 
-func testConstants[T any](t *testing.T, expected []T, actual []object.Object) error {
+func testConstants[T any](expected []T, actual []object.Object) error {
 	if len(expected) != len(actual) {
 		return fmt.Errorf("wrong number of constants. got=%d, want=%d", len(actual), len(expected))
 	}

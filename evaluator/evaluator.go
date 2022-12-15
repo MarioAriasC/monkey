@@ -17,21 +17,11 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.Program:
 		return evalProgram(node.Statements, env)
 
-	case *ast.ExpressionStatement:
-		return Eval(node.Expression, env)
+	case *ast.Identifier:
+		return evalIdentifier(node, env)
 
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: node.Value}
-
-	case *ast.Boolean:
-		return nativeBoolToBooleanObject(node.Value)
-
-	case *ast.PrefixExpression:
-		right := Eval(node.Right, env)
-		if isError(right) {
-			return right
-		}
-		return evalPrefixExpression(node.Operator, right)
 
 	case *ast.InfixExpression:
 		left := Eval(node.Left, env)
@@ -47,30 +37,11 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.BlockStatement:
 		return evalBlockStatement(node, env)
 
+	case *ast.ExpressionStatement:
+		return Eval(node.Expression, env)
+
 	case *ast.IfExpression:
 		return evalIfExpression(node, env)
-
-	case *ast.ReturnStatement:
-		val := Eval(node.ReturnValue, env)
-		if isError(val) {
-			return val
-		}
-		return &object.ReturnValue{Value: val}
-
-	case *ast.LetStatement:
-		val := Eval(node.Value, env)
-		if isError(val) {
-			return val
-		}
-		env.Set(node.Name.Value, val)
-
-	case *ast.Identifier:
-		return evalIdentifier(node, env)
-
-	case *ast.FunctionLiteral:
-		params := node.Parameters
-		body := node.Body
-		return &object.Function{Parameters: params, Body: body, Env: env}
 
 	case *ast.CallExpression:
 		function := Eval(node.Function, env)
@@ -83,6 +54,35 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		}
 
 		return applyFunction(function, args)
+
+	case *ast.ReturnStatement:
+		val := Eval(node.ReturnValue, env)
+		if isError(val) {
+			return val
+		}
+		return &object.ReturnValue{Value: val}
+
+	case *ast.PrefixExpression:
+		right := Eval(node.Right, env)
+		if isError(right) {
+			return right
+		}
+		return evalPrefixExpression(node.Operator, right)
+
+	case *ast.Boolean:
+		return nativeBoolToBooleanObject(node.Value)
+
+	case *ast.LetStatement:
+		val := Eval(node.Value, env)
+		if isError(val) {
+			return val
+		}
+		env.Set(node.Name.Value, val)
+
+	case *ast.FunctionLiteral:
+		params := node.Parameters
+		body := node.Body
+		return &object.Function{Parameters: params, Body: body, Env: env}
 
 	case *ast.StringLiteral:
 		return &object.String{Value: node.Value}
